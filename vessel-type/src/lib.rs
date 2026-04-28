@@ -1,4 +1,4 @@
-use strum_macros::{AsRefStr, EnumIter, FromRepr};
+use strum::{AsRefStr, EnumIter, FromRepr};
 #[allow(clippy::upper_case_acronyms)]
 #[derive(Debug, Clone, Copy, FromRepr, AsRefStr, EnumIter)]
 pub enum VesselType {

@@ -44,7 +44,7 @@ impl<'i> BGRImage<'i> {
     pub fn get_height(&self) -> usize {
         self.height
     }
-    pub fn get_pixel(&self, y: usize, x: usize) -> Pixel {
+    pub fn get_pixel(&self, y: usize, x: usize) -> Pixel<'_> {
         let index = (y * self.width + x) * self.channels;
         let pixel = &self.pixels[index..index + self.channels];
         Pixel { pixel }
