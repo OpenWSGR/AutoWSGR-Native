@@ -74,10 +74,7 @@ pub unsafe extern "C" fn locate(input: *const c_void, output: *mut c_int) -> c_i
 pub unsafe extern "C" fn recognize_enemy(input: *const c_void, output: *mut c_char) -> c_int {
     catch_panic(|| {
         let input = unsafe { RecognizeEnemyInput::from_raw(input) };
-        let result = recognize_enemy::recognize_enemy(
-            &input.images,
-            &recognize_enemy::templates::Template::init_templates(),
-        );
+        let result = recognize_enemy::recognize_enemy(&input.images);
 
         unsafe { output.copy_from(result.as_ptr() as *const c_char, result.len()) };
         0

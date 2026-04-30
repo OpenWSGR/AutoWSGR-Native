@@ -7,7 +7,7 @@ use crate::interface::WrappedPixels;
 use crate::locator::*;
 use crate::recognize_enemy;
 use crate::recognize_enemy::character_image::CharacterImage;
-use crate::recognize_enemy::templates::Template;
+use crate::recognize_enemy::templates;
 use crate::recognize_enemy::*;
 use crate::recognize_map::*;
 struct ImageWarpper {
@@ -95,8 +95,11 @@ fn test_recognize_enemy() {
             images.push(image);
             names.push(e.file_name().to_string_lossy().to_string());
         });
-    let templates = Template::init_templates();
-    let result = recognize_enemy::recognize_enemy(&images, &templates);
+    println!(
+        "Loaded {} templates",
+        recognize_enemy::templates::TEMPLATES.len()
+    );
+    let result = recognize_enemy::recognize_enemy(&images);
 
     //match result with names
     let result: Vec<&str> = result.split_whitespace().collect();

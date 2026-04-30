@@ -2,7 +2,7 @@ pub mod character_image;
 pub mod templates;
 
 use character_image::{CharacterImage, MatchMethod};
-use templates::Template;
+use templates::{TEMPLATES, Template};
 
 pub const WIDTH: usize = 32;
 pub const HEIGHT: usize = 16;
@@ -11,7 +11,8 @@ const ENDWITH_母: &[&str; 3] = &["CV", "AV", "CVL"];
 const STARTWITH_战: &[&str; 2] = &["BB", "BC"];
 const STARTWITH_轻: &[&str; 2] = &["CL", "CVL"];
 
-pub fn recognize_enemy(images: &[CharacterImage], templates: &[Template]) -> String {
+pub fn recognize_enemy(images: &[CharacterImage]) -> String {
+    let templates = &*TEMPLATES;
     let mut string = String::new();
 
     for image in images {

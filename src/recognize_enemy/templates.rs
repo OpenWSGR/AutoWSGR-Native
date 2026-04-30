@@ -1,7 +1,12 @@
+use std::sync::LazyLock;
+
 use crate::interface::WrappedPixels;
 
 use super::CharacterImage;
 use vessel_type::VesselType;
+
+pub static TEMPLATES: LazyLock<Vec<Template>> = LazyLock::new(Template::init_templates);
+
 pub struct Template {
     pub ship_type: VesselType,
     pub image: CharacterImage,
@@ -12,7 +17,7 @@ impl Template {
     /// | templates_count: u32 | templates: [Template] |
     /// # Layout of Template:
     /// | ship_type: u8 | image: [u8] |
-    pub fn init_templates() -> Vec<Template> {
+    fn init_templates() -> Vec<Template> {
         let raw = include_bytes!(concat!(env!("OUT_DIR"), "/templates.bin"));
         let mut templates = Vec::new();
         let mut offset = 0;
