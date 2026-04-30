@@ -1,8 +1,8 @@
 use crate::interface::WrappedPixels;
 
-use super::{templates::Template, HEIGHT, WIDTH};
+use super::{HEIGHT, WIDTH, templates::Template};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum MatchMethod {
     First,
     Last,
@@ -62,12 +62,16 @@ impl CharacterImage {
         }
     }
 
-    pub fn calc_image_diffreance(&self, template: &Template, method: MatchMethod) -> f64 {
+    /// Calculate image difference using NCC (Normalized Cross-Correlation).
+    /// Returns a "distance" value: 1 - NCC, where lower is more similar.
+    /// NCC is inherently robust to brightness/contrast changes and spreads
+    /// the influence of individual pixel mismatches across the whole region.
+    pub fn calc_image_difference(&self, template: &Template, method: MatchMethod) -> f64 {
         if self.brightness.max(template.image.brightness)
             / self.brightness.min(template.image.brightness)
             >= 3f64
         {
-            return 1f64;
+            return f64::MAX;
         }
         let match_start;
         let match_end;
@@ -85,28 +89,62 @@ impl CharacterImage {
                 match_end = self.width;
             }
         }
-        let mut diff = 1000f64;
-        for i in -1..=1 {
-            for j in -1..=1 {
-                let mut now = 0f64;
-                for pa2 in 0..self.height as i32 {
-                    for pa1 in 0..match_end as i32 {
-                        let pb1 = pa1 + i;
-                        let pb2 = pa2 + j;
-                        if pb1 < match_end as i32
-                            && pb2 < self.height as i32
-                            && pb1 >= match_start as i32
-                            && pb2 >= 0
+
+        let mut best_dist = f64::MAX;
+        for dx in -1i32..=1 {
+            for dy in -1i32..=1 {
+                // Compute means
+                let mut count = 0usize;
+                let mut sum_a = 0f64;
+                let mut sum_b = 0f64;
+                for y in 0..self.height as i32 {
+                    for x in match_start as i32..match_end as i32 {
+                        let tx = x + dx;
+                        let ty = y + dy;
+                        if tx < match_end as i32
+                            && ty < self.height as i32
+                            && tx >= match_start as i32
+                            && ty >= 0
                         {
-                            let a = self.pixels[pa2 as usize][pa1 as usize];
-                            let b = template.image.pixels[pb2 as usize][pb1 as usize];
-                            now += (a - b).abs();
+                            sum_a += self.pixels[y as usize][x as usize];
+                            sum_b += template.image.pixels[ty as usize][tx as usize];
+                            count += 1;
                         }
                     }
                 }
-                diff = diff.min(now);
+                let mean_a = sum_a / count as f64;
+                let mean_b = sum_b / count as f64;
+
+                // Compute NCC: Σ(a-mean_a)(b-mean_b) / sqrt(Σ(a-mean_a)² · Σ(b-mean_b)²)
+                let mut numerator = 0f64;
+                let mut denom_a = 0f64;
+                let mut denom_b = 0f64;
+                for y in 0..self.height as i32 {
+                    for x in match_start as i32..match_end as i32 {
+                        let tx = x + dx;
+                        let ty = y + dy;
+                        if tx < match_end as i32
+                            && ty < self.height as i32
+                            && tx >= match_start as i32
+                            && ty >= 0
+                        {
+                            let a = self.pixels[y as usize][x as usize] - mean_a;
+                            let b = template.image.pixels[ty as usize][tx as usize] - mean_b;
+                            numerator += a * b;
+                            denom_a += a * a;
+                            denom_b += b * b;
+                        }
+                    }
+                }
+                let denominator = (denom_a * denom_b).sqrt();
+                if denominator > 0.0 {
+                    let ncc = numerator / denominator;
+                    // Convert similarity [-1, 1] to distance: lower = more similar
+                    let dist = 1.0 - ncc;
+                    best_dist = best_dist.min(dist);
+                }
             }
         }
-        diff
+        best_dist
     }
 }

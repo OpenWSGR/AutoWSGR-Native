@@ -15,21 +15,21 @@ pub fn recognize_enemy(images: &[CharacterImage], templates: &[Template]) -> Str
     let mut string = String::new();
 
     for image in images {
-        let mut min = &templates[0];
+        let mut best = &templates[0];
         for current in templates.iter().skip(1) {
-            let category = check_category(min, current);
+            let category = check_category(best, current);
             let method = match category {
                 Category::Endwith巡 | Category::Endwith母 => MatchMethod::First,
                 Category::Startwith战 | Category::Startwith轻 => MatchMethod::Last,
                 Category::None => MatchMethod::All,
             };
-            let diff_current = image.calc_image_diffreance(current, method);
-            let diff_min = image.calc_image_diffreance(min, method);
-            if diff_current < diff_min {
-                min = current;
+            let dist_current = image.calc_image_difference(current, method);
+            let dist_best = image.calc_image_difference(best, method);
+            if dist_current < dist_best {
+                best = current;
             }
         }
-        string.push_str(min.ship_type.as_ref());
+        string.push_str(best.ship_type.as_ref());
         string.push(' ');
     }
 
