@@ -1,78 +1,92 @@
-use strum::{AsRefStr, EnumIter, FromRepr};
+use strum::{AsRefStr, EnumIter, EnumProperty, FromRepr};
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Clone, Copy, FromRepr, AsRefStr, EnumIter)]
+#[derive(Debug, Clone, Copy, PartialEq, FromRepr, AsRefStr, EnumIter, EnumProperty)]
 pub enum VesselType {
-    BB,  //战列
-    BBV, //航战
-    BC,  //战巡
-    BBG, //导战
-    CBG, //大巡
+    #[strum(props(Chinese = "战列"))]
+    BB,
+    #[strum(props(Chinese = "航战"))]
+    BBV,
+    #[strum(props(Chinese = "战巡"))]
+    BC,
+    #[strum(props(Chinese = "导战"))]
+    BBG,
+    #[strum(props(Chinese = "大巡"))]
+    CBG,
 
-    CV,  //航母
-    CVL, //轻母
-    AV,  //装母
+    #[strum(props(Chinese = "航母"))]
+    CV,
+    #[strum(props(Chinese = "轻母"))]
+    CVL,
+    #[strum(props(Chinese = "装母"))]
+    AV,
 
-    CA,  //重巡
-    CL,  //轻巡
-    CLT, //雷巡
-    CAV, //航巡
-    KP,  //导巡
-    CG,  //防巡
+    #[strum(props(Chinese = "重巡"))]
+    CA,
+    #[strum(props(Chinese = "轻巡"))]
+    CL,
+    #[strum(props(Chinese = "雷巡"))]
+    CLT,
+    #[strum(props(Chinese = "航巡"))]
+    CAV,
+    #[strum(props(Chinese = "导巡"))]
+    KP,
+    #[strum(props(Chinese = "防巡"))]
+    CG,
 
-    BM, //重炮
+    #[strum(props(Chinese = "重炮"))]
+    BM,
 
-    DD,   //驱逐
-    ASDG, //导驱
-    AADG, //防驱
+    #[strum(props(Chinese = "驱逐"))]
+    DD,
+    #[strum(props(Chinese = "导驱"))]
+    ASDG,
+    #[strum(props(Chinese = "防驱"))]
+    AADG,
 
-    SS, //潜艇
-    SC, //炮潜
+    #[strum(props(Chinese = "潜艇"))]
+    SS,
+    #[strum(props(Chinese = "炮潜"))]
+    SC,
 
-    AP,       //补给
-    Elite,    //旗舰
-    Fortess,  //要塞
-    Port,     //港口
-    Airfield, //机场
-    NotDef,   //调谐
+    #[strum(props(Chinese = "补给"))]
+    AP,
+    #[strum(props(Chinese = "旗舰"))]
+    Elite,
+    #[strum(props(Chinese = "要塞"))]
+    Fortess,
+    #[strum(props(Chinese = "港口"))]
+    Port,
+    #[strum(props(Chinese = "机场"))]
+    Airfield,
+    #[strum(props(Chinese = "调谐"))]
+    NotDef,
 
-    NO, //无舰船
+    #[strum(props(Chinese = "无"))]
+    NO,
 }
 
-pub enum 舰船种类 {
-    战列,
-    航战,
-    战巡,
-    导战,
-    大巡,
+#[cfg_attr(feature = "pyo3", pyo3::pymethods)]
+impl VesselType {
+    pub fn as_chinese(&self) -> &'static str {
+        self.get_str("Chinese").unwrap()
+    }
 
-    航母,
-    轻母,
-    装母,
+    pub fn as_english(&self) -> &str {
+        self.as_ref()
+    }
 
-    重巡,
-    轻巡,
-    雷巡,
-    航巡,
-    导巡,
-    防巡,
+    #[cfg_attr(feature = "pyo3", staticmethod)]
+    pub fn from_chinese(s: &str) -> Option<Self> {
+        use strum::IntoEnumIterator;
+        Self::iter().find(|vt| vt.as_chinese() == s)
+    }
 
-    重炮,
-
-    驱逐,
-    导驱,
-    防驱,
-
-    潜艇,
-    炮潜,
-
-    补给,
-    旗舰,
-    要塞,
-    港口,
-    机场,
-    谐调,
-
-    无舰船,
+    #[cfg_attr(feature = "pyo3", staticmethod)]
+    pub fn from_english(s: &str) -> Option<Self> {
+        use strum::IntoEnumIterator;
+        Self::iter().find(|vt| vt.as_english() == s)
+    }
 }
 
 #[cfg(test)]

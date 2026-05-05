@@ -2,7 +2,6 @@ use std::fs::{self, File};
 use std::io::{BufWriter, Write};
 use std::path::Path;
 
-use strum::IntoEnumIterator;
 use vessel_type::VesselType;
 
 /// Build script: reads PNG templates from TemplateData/ directory and packs
@@ -14,7 +13,7 @@ use vessel_type::VesselType;
 /// # Layout of Template:
 /// | ship_type: u8 | height: u8 | width: u8 | pixels: [u8] |
 ///
-/// Filename convention: {VesselType}{index}.png (e.g. AP0.png, BB1.png)
+/// Filename convention: {VesselType}{index}.png (e.g. 补给0.png, 战列1.png)
 fn main() {
     let out_dir = std::env::var("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("templates.bin");
@@ -42,15 +41,17 @@ fn main() {
         let filename = entry.file_name();
         let name = filename.to_string_lossy();
 
-        // Extract ship type from filename: strip trailing digits and .png
-        let ship_type_str: String = name
-            .trim_end_matches(".png")
+        // Extract ship type from filename: strip extension and trailing digits
+        let ship_type_str: String = entry
+            .path()
+            .file_stem()
+            .unwrap()
+            .to_string_lossy()
             .trim_end_matches(|c: char| c.is_ascii_digit())
             .to_string();
 
         // Find matching VesselType
-        let ship_type = VesselType::iter()
-            .find(|vt| vt.as_ref() == ship_type_str)
+        let ship_type = VesselType::from_chinese(&ship_type_str)
             .unwrap_or_else(|| panic!("Unknown ship type in filename: {name}"));
         writer.write_all(&[ship_type as u8]).unwrap();
 

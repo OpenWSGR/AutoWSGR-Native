@@ -5,3 +5,7 @@ edition = "2021"
 
 [dependencies]
 strum = { version = "0.28", features = ["derive"] }
+pyo3 = { version = "0.28", optional = true }
+
+[features]
+pyo3 = ["dep:pyo3"]
