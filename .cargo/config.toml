@@ -1,2 +1,7 @@
+[alias]
+test-quick = "test --no-default-features"
 [target.'cfg(all(windows, target_env = "msvc"))']
 rustflags = ["-C", "target-feature=+crt-static"]
+
+[env]
+PYO3_PYTHON = { value = ".venv/Scripts/python.exe", relative = true }

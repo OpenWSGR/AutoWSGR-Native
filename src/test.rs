@@ -2,8 +2,8 @@
 extern crate image;
 use ::image::{DynamicImage, ImageReader};
 
+use crate::WrappedPixels;
 use crate::image::BGRImage;
-use crate::interface::WrappedPixels;
 use crate::locator::*;
 use crate::recognize_enemy;
 use crate::recognize_enemy::character_image::CharacterImage;
@@ -99,11 +99,13 @@ fn test_recognize_enemy() {
         "Loaded {} templates",
         recognize_enemy::templates::TEMPLATES.len()
     );
+    for (i, template) in recognize_enemy::templates::TEMPLATES.iter().enumerate() {
+        println!("Template {i}: {}", template.ship_type.as_chinese());
+    }
     let result = recognize_enemy::recognize_enemy(&images);
 
     //match result with names
-    let result: Vec<&str> = result.split_whitespace().collect();
     for (r, n) in result.iter().zip(names.iter()) {
-        println!("{r} - {n}");
+        println!("{} {} - {n}", r.as_chinese(), r.as_english());
     }
 }

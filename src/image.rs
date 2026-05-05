@@ -1,4 +1,4 @@
-use crate::interface::WrappedPixels;
+use crate::WrappedPixels;
 
 pub struct Pixel<'i> {
     pub pixel: &'i [u8],
@@ -30,7 +30,11 @@ pub struct BGRImage<'i> {
 }
 impl<'i> BGRImage<'i> {
     pub fn from_wrapped_pixels(wrapped_pixels: WrappedPixels<'i>) -> Self {
-        assert_eq!(wrapped_pixels.channels, 3);
+        assert_eq!(
+            wrapped_pixels.channels, 3,
+            "expected 3 channels for BGR image, got {} channels",
+            wrapped_pixels.channels
+        );
         Self {
             width: wrapped_pixels.width,
             height: wrapped_pixels.height,

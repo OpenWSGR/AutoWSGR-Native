@@ -12,7 +12,7 @@ const KEY_COLORS: [Pixel; 3] = [
     },
 ];
 
-pub fn locate(image: &BGRImage) -> Vec<i32> {
+pub fn locate(image: &BGRImage) -> Vec<[i32; 2]> {
     let width = image.get_width();
     let height = image.get_height();
 
@@ -70,14 +70,12 @@ pub fn locate(image: &BGRImage) -> Vec<i32> {
                 lst = row as i32;
             }
         } else if lst != -1 {
-            result.push(lst);
-            result.push(row as i32);
+            result.push([lst, row as i32]);
             lst = -1;
         }
     }
     if lst != -1 {
-        result.push(lst);
-        result.push(height as i32);
+        result.push([lst, height as i32]);
     }
 
     result

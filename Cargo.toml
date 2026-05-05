@@ -3,10 +3,7 @@ name = "image-autowsgrs"
 version = "0.1.0"
 edition = "2024"
 [workspace]
-members = ["vessel-type"]
-
-[lib]
-crate-type = ["cdylib"]
+members = ["vessel-type", "python-bindings"]
 
 [build-dependencies]
 vessel-type = { path = "./vessel-type" }

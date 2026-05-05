@@ -1,7 +1,7 @@
-use strum::{AsRefStr, EnumIter, EnumProperty, FromRepr};
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int))]
+use strum::{EnumIter, EnumProperty, FromRepr, IntoStaticStr};
+#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int, from_py_object))]
 #[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Clone, Copy, PartialEq, FromRepr, AsRefStr, EnumIter, EnumProperty)]
+#[derive(Debug, Clone, Copy, PartialEq, FromRepr, IntoStaticStr, EnumIter, EnumProperty)]
 pub enum VesselType {
     #[strum(props(Chinese = "战列"))]
     BB,
@@ -66,26 +66,49 @@ pub enum VesselType {
     NO,
 }
 
-#[cfg_attr(feature = "pyo3", pyo3::pymethods)]
 impl VesselType {
     pub fn as_chinese(&self) -> &'static str {
         self.get_str("Chinese").unwrap()
     }
 
-    pub fn as_english(&self) -> &str {
-        self.as_ref()
+    pub fn as_english(&self) -> &'static str {
+        self.into()
     }
 
-    #[cfg_attr(feature = "pyo3", staticmethod)]
     pub fn from_chinese(s: &str) -> Option<Self> {
         use strum::IntoEnumIterator;
         Self::iter().find(|vt| vt.as_chinese() == s)
     }
 
-    #[cfg_attr(feature = "pyo3", staticmethod)]
     pub fn from_english(s: &str) -> Option<Self> {
         use strum::IntoEnumIterator;
         Self::iter().find(|vt| vt.as_english() == s)
+    }
+}
+
+#[cfg(feature = "pyo3")]
+#[pyo3::pymethods]
+impl VesselType {
+    #[pyo3(name = "as_chinese")]
+    fn py_as_chinese(&self) -> &'static str {
+        self.as_chinese()
+    }
+
+    #[pyo3(name = "as_english")]
+    fn py_as_english(&self) -> &'static str {
+        self.as_english()
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "from_chinese")]
+    fn py_from_chinese(s: String) -> Option<Self> {
+        Self::from_chinese(&s)
+    }
+
+    #[staticmethod]
+    #[pyo3(name = "from_english")]
+    fn py_from_english(s: String) -> Option<Self> {
+        Self::from_english(&s)
     }
 }
 
