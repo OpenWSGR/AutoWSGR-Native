@@ -214,7 +214,7 @@ jobs:
       #   if: ${{ startsWith(github.ref, 'refs/tags/') }}
       #   run: uv publish 'wheels-*/*'
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         if: startsWith(github.ref, 'refs/tags/')
         with:
           # 同样使用通配符，确保抓取所有子文件夹里的 whl 和 sdist
