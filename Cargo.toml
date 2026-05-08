@@ -1,17 +1,22 @@
-[package]
-name = "image-autowsgrs"
-version = "0.1.0"
-edition = "2024"
 [workspace]
-members = ["vessel-type", "python-bindings"]
+members = ["vessel_type", "python_bindings"]
+[workspace.package]
+version = "0.0.0"
+edition = "2024"
+
+[package]
+name = "autowsgr_native"
+version.workspace = true
+edition.workspace = true
+
 
 [build-dependencies]
-vessel-type = { path = "./vessel-type" }
+vessel_type = { path = "./vessel_type" }
 strum = "0.28"
 image = "0.25"
 
 [dependencies]
-vessel-type = { path = "./vessel-type" }
+vessel_type = { path = "./vessel_type" }
 
 [dev-dependencies]
 image = "0.25"

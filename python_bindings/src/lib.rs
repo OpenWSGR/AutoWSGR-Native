@@ -4,9 +4,9 @@ use pyo3::prelude::*;
 use std::borrow::Cow;
 
 #[pyo3::pymodule]
-mod image_autowsgrs {
+mod autowsgr_native {
     use super::*;
-    use ::image_autowsgrs::{
+    use ::autowsgr_native::{
         WrappedPixels, image::BGRImage, recognize_enemy::character_image::CharacterImage,
     };
 
@@ -38,7 +38,7 @@ mod image_autowsgrs {
             pixels: &pixels,
         };
         let bgr = BGRImage::from_wrapped_pixels(wrapped);
-        Ok(::image_autowsgrs::locator::locate(&bgr))
+        Ok(::autowsgr_native::locator::locate(&bgr))
     }
 
     #[pyfunction]
@@ -47,8 +47,8 @@ mod image_autowsgrs {
         for img in &images {
             let shape = img.shape();
             let (height, width) = (shape[0], shape[1]);
-            if height != ::image_autowsgrs::recognize_enemy::HEIGHT
-                || width != ::image_autowsgrs::recognize_enemy::WIDTH
+            if height != ::autowsgr_native::recognize_enemy::HEIGHT
+                || width != ::autowsgr_native::recognize_enemy::WIDTH
             {
                 return Err(PyValueError::new_err(format!(
                     "expected grayscale image with shape (H, W), got shape {:?}",
@@ -68,7 +68,7 @@ mod image_autowsgrs {
             };
             char_images.push(CharacterImage::from_wrapped_pixels(wrapped));
         }
-        let result = ::image_autowsgrs::recognize_enemy::recognize_enemy(&char_images);
+        let result = ::autowsgr_native::recognize_enemy::recognize_enemy(&char_images);
         Ok(result
             .iter()
             .map(|vessel_type| vessel_type.as_english())
@@ -98,7 +98,7 @@ mod image_autowsgrs {
             pixels: &pixels,
         };
         let bgr = BGRImage::from_wrapped_pixels(wrapped);
-        let result = ::image_autowsgrs::recognize_map::recognize_map(&bgr);
+        let result = ::autowsgr_native::recognize_map::recognize_map(&bgr);
         Ok(result.to_string())
     }
 }

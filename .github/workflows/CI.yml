@@ -7,9 +7,9 @@ name: CI
 
 on:
   push:
-    branches:
-      - main
-      - master
+    # branches:
+    #   - main
+    #   - master
     tags:
       - "*"
   pull_request:
@@ -191,6 +191,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: pypi_api_token
     if: ${{ startsWith(github.ref, 'refs/tags/') || github.event_name ==
       'workflow_dispatch' }}
     needs: [ linux, musllinux, windows, macos, sdist ]
@@ -207,19 +208,20 @@ jobs:
         uses: actions/attest-build-provenance@v3
         with:
           subject-path: "wheels-*/*"
-      # - name: Install uv
-      #   if: ${{ startsWith(github.ref, 'refs/tags/') }}
-      #   uses: astral-sh/setup-uv@v7
-      # - name: Publish to PyPI
-      #   if: ${{ startsWith(github.ref, 'refs/tags/') }}
-      #   run: uv publish 'wheels-*/*'
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          # 同样使用通配符，确保抓取所有子文件夹里的 whl 和 sdist
-          files: wheels-*/*
-          generate_release_notes: true
+      - name: Install uv
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        uses: astral-sh/setup-uv@v7
+      - name: Publish to PyPI
+        if: ${{ startsWith(github.ref, 'refs/tags/') }}
+        run: uv publish 'wheels-*/*'
+
+        # - name: Create GitHub Release
+        #   uses: softprops/action-gh-release@v2
+        #   if: startsWith(github.ref, 'refs/tags/')
+        #   with:
+        #     # 同样使用通配符，确保抓取所有子文件夹里的 whl 和 sdist
+        #     files: wheels-*/*
+        #     generate_release_notes: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # UV_PUBLISH_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+          # GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UV_PUBLISH_TRUSTED_PUBLISHER: "true"

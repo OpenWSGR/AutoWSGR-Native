@@ -71,6 +71,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 
 [[package]]
+name = "autowsgr_native"
+version = "0.0.0"
+dependencies = [
+ "image",
+ "strum",
+ "vessel_type",
+ "walkdir",
+]
+
+[[package]]
+name = "autowsgr_native_py"
+version = "0.0.0"
+dependencies = [
+ "autowsgr_native",
+ "numpy",
+ "pyo3",
+ "vessel_type",
+]
+
+[[package]]
 name = "av-scenechange"
 version = "0.14.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -355,26 +375,6 @@ dependencies = [
  "tiff",
  "zune-core",
  "zune-jpeg",
-]
-
-[[package]]
-name = "image-autowsgrs"
-version = "0.1.0"
-dependencies = [
- "image",
- "strum",
- "vessel-type",
- "walkdir",
-]
-
-[[package]]
-name = "image-autowsgrs-py"
-version = "0.1.0"
-dependencies = [
- "image-autowsgrs",
- "numpy",
- "pyo3",
- "vessel-type",
 ]
 
 [[package]]
@@ -1058,8 +1058,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "vessel-type"
-version = "0.1.0"
+name = "vessel_type"
+version = "0.0.0"
 dependencies = [
  "pyo3",
  "strum",

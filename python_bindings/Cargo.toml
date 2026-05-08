@@ -1,0 +1,14 @@
+[package]
+name = "autowsgr_native_py"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+name = "autowsgr_native"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.28", features = ["extension-module", "abi3-py312"] }
+numpy = "0.28"
+autowsgr_native = { path = ".." }
+vessel_type = { path = "../vessel_type", features = ["pyo3"] }

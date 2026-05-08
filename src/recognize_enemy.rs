@@ -7,7 +7,7 @@ use vessel_type::VesselType;
 
 pub const WIDTH: usize = 32;
 pub const HEIGHT: usize = 16;
-const ENDWITH_巡: &[&str; 6] = &["CA", "CL", "CAV", "CLT", "CBG", "BC"];
+const ENDWITH_巡: &[&str; 6] = &["CA", "CL", "CAV", "CLT", "BG", "BC"];
 const ENDWITH_母: &[&str; 3] = &["CV", "AV", "CVL"];
 const STARTWITH_战: &[&str; 2] = &["BB", "BC"];
 const STARTWITH_轻: &[&str; 2] = &["CL", "CVL"];
