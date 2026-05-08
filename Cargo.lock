@@ -72,7 +72,7 @@ checksum = "c08606f8c3cbf4ce6ec8e28fb0014a2c086708fe954eaa885384a6165172e7e8"
 
 [[package]]
 name = "autowsgr_native"
-version = "0.0.0"
+version = "0.2.0"
 dependencies = [
  "image",
  "strum",
@@ -82,7 +82,7 @@ dependencies = [
 
 [[package]]
 name = "autowsgr_native_py"
-version = "0.0.0"
+version = "0.2.0"
 dependencies = [
  "autowsgr_native",
  "numpy",
@@ -1059,7 +1059,7 @@ dependencies = [
 
 [[package]]
 name = "vessel_type"
-version = "0.0.0"
+version = "0.2.0"
 dependencies = [
  "pyo3",
  "strum",
