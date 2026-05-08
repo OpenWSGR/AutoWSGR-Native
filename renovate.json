@@ -7,13 +7,7 @@
     {
       "description": "防止 Renovate 升级 GitHub Actions 中的 Python 解释器版本",
       "matchManagers": ["github-actions"],
-      "matchPackageNames": ["python"],
-      "enabled": false
-    },
-    {
-      "description": "针对 maturin 生成的特定字符串参数进行保护（如 3.14t）",
-      "matchManagers": ["github-actions"],
-      "matchStrings": ["python3\\.\\d+t?"],
+      "matchDepNames": ["python"],
       "enabled": false
     }
   ]
