@@ -84,7 +84,7 @@ pub fn locate(image: &BGRImage) -> Vec<[i32; 2]> {
 /// wtf
 fn cmp_line(line1: &[(i32, i32)], line2: &[(i32, i32)]) -> i32 {
     match line1.is_empty() {
-        true => 0,
+        true => 1, //这里应该是1才对，但是因为这一行永远不会被执行，所以无论是0还是1都无所谓
         false => match line2.is_empty() {
             true => 0,
             false => 1,
