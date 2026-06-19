@@ -9,6 +9,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.29", features = ["extension-module", "abi3-py312"] }
-numpy = "0.28"
+numpy = "0.29"
 autowsgr_native = { path = ".." }
 vessel_type = { path = "../vessel_type", features = ["pyo3"] }
