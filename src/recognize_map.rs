@@ -103,30 +103,30 @@ impl BlockedImage {
     }
 }
 
-type CorppedImage = Vec<Vec<bool>>;
+type CroppedImage = Vec<Vec<bool>>;
 
 #[allow(clippy::collapsible_else_if)]
 pub fn recognize_map(image: &BGRImage) -> char {
     let mut blocked_image = BlockedImage::new(image.get_width(), image.get_height());
     blocked_image.init(image);
     blocked_image.blocks.sort();
-    let mut corpped_img: CorppedImage = vec![];
+    let mut cropped_img: CroppedImage = vec![];
     let block = blocked_image.blocks[0];
     for y in block.top..block.bottom {
-        corpped_img.push(vec![]);
+        cropped_img.push(vec![]);
         for x in block.left..block.right {
             let index = blocked_image.get_index(y, x);
             let find = blocked_image.find(index);
             let var_name = blocked_image.b[find] == block;
             let col = blocked_image.rec[y][x] && (var_name);
-            corpped_img[y - block.top].push(col);
+            cropped_img[y - block.top].push(col);
         }
     }
 
     const INV_COUNT_LIMIT: i32 = 2;
-    let line_col_rev = scan_col_rev(&corpped_img);
-    let line_row_rev = scan_row_rev(&corpped_img);
-    let line_row = scan_row(&corpped_img);
+    let line_col_rev = scan_col_rev(&cropped_img);
+    let line_row_rev = scan_row_rev(&cropped_img);
+    let line_row = scan_row(&cropped_img);
 
     let row_inv_count = line_row_rev.iter().filter(|&&x| x).count() as i32;
     let col_inv_count = line_col_rev.iter().filter(|&&x| x).count() as i32;
@@ -193,11 +193,7 @@ pub fn recognize_map(image: &BGRImage) -> char {
                     count += 1;
                 }
             }
-            if count >= LIMIT {
-                'E'
-            } else {
-                'F'
-            }
+            if count >= LIMIT { 'E' } else { 'F' }
         } else {
             const LENGTH_DIFF_LIMIT: i32 = 3;
             let mut min_size = 100;
@@ -220,7 +216,7 @@ pub fn recognize_map(image: &BGRImage) -> char {
 }
 
 #[allow(clippy::needless_range_loop)]
-fn scan_row_rev(img: &CorppedImage) -> Vec<bool> {
+fn scan_row_rev(img: &CroppedImage) -> Vec<bool> {
     let mut res = vec![];
     let row = img.len();
     let col = img[0].len();
@@ -239,7 +235,7 @@ fn scan_row_rev(img: &CorppedImage) -> Vec<bool> {
 }
 
 #[allow(clippy::needless_range_loop)]
-fn scan_col_rev(img: &CorppedImage) -> Vec<bool> {
+fn scan_col_rev(img: &CroppedImage) -> Vec<bool> {
     let mut res = vec![];
     let row = img.len();
     let col = img[0].len();
@@ -258,7 +254,7 @@ fn scan_col_rev(img: &CorppedImage) -> Vec<bool> {
 }
 
 #[allow(clippy::needless_range_loop)]
-fn scan_row(img: &CorppedImage) -> Vec<i32> {
+fn scan_row(img: &CroppedImage) -> Vec<i32> {
     let mut res = vec![];
     let row = img.len();
     let col = img[0].len();

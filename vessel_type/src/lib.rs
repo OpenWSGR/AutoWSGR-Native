@@ -56,7 +56,7 @@ pub enum VesselType {
     #[strum(props(Chinese = "旗舰"))]
     Elite,
     #[strum(props(Chinese = "要塞"))]
-    Fortess,
+    Fortress,
     #[strum(props(Chinese = "港口"))]
     Port,
     #[strum(props(Chinese = "机场"))]

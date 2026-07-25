@@ -10,13 +10,13 @@ use crate::recognize_enemy::character_image::CharacterImage;
 use crate::recognize_enemy::templates;
 use crate::recognize_enemy::*;
 use crate::recognize_map::*;
-struct ImageWarpper {
+struct ImageWrapper {
     width: usize,
     height: usize,
     channels: usize,
     pixels: Vec<u8>,
 }
-fn bgr_warpper(image: &DynamicImage) -> ImageWarpper {
+fn bgr_wrapper(image: &DynamicImage) -> ImageWrapper {
     let width = image.width() as usize;
     let height = image.height() as usize;
     let mut pixels = image.to_rgb8().into_raw();
@@ -31,14 +31,14 @@ fn bgr_warpper(image: &DynamicImage) -> ImageWarpper {
             pixels[index + 2] = r;
         }
     }
-    ImageWarpper {
+    ImageWrapper {
         width,
         height,
         channels: 3,
         pixels,
     }
 }
-fn to_bgr_image(image: &ImageWarpper) -> BGRImage<'_> {
+fn to_bgr_image(image: &ImageWrapper) -> BGRImage<'_> {
     BGRImage::from_wrapped_pixels(WrappedPixels {
         width: image.width,
         height: image.height,
@@ -53,25 +53,25 @@ fn test_locator() {
             .unwrap()
             .decode()
             .unwrap();
-        let image = bgr_warpper(&image);
+        let image = bgr_wrapper(&image);
         let image = to_bgr_image(&image);
         let result = locate(&image);
         println!("{result:?}");
     }
 }
 
-fn gray_warpper(image: &DynamicImage) -> ImageWarpper {
+fn gray_wrapper(image: &DynamicImage) -> ImageWrapper {
     let width = image.width() as usize;
     let height = image.height() as usize;
     let pixels = image.to_luma8().into_raw();
-    ImageWarpper {
+    ImageWrapper {
         width,
         height,
         channels: 1,
         pixels,
     }
 }
-fn to_character_image(image: &ImageWarpper) -> CharacterImage {
+fn to_character_image(image: &ImageWrapper) -> CharacterImage {
     CharacterImage::from_wrapped_pixels(WrappedPixels {
         width: image.width,
         height: image.height,
@@ -90,7 +90,7 @@ fn test_recognize_enemy() {
         .filter(|e| e.file_type().is_file())
         .for_each(|e| {
             let image = ImageReader::open(e.path()).unwrap().decode().unwrap();
-            let image = gray_warpper(&image);
+            let image = gray_wrapper(&image);
             let image = to_character_image(&image);
             images.push(image);
             names.push(e.file_name().to_string_lossy().to_string());

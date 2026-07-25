@@ -7,10 +7,10 @@ use vessel_type::VesselType;
 
 pub const WIDTH: usize = 32;
 pub const HEIGHT: usize = 16;
-const ENDWITH_巡: &[&str; 6] = &["CA", "CL", "CAV", "CLT", "BG", "BC"];
-const ENDWITH_母: &[&str; 3] = &["CV", "AV", "CVL"];
-const STARTWITH_战: &[&str; 2] = &["BB", "BC"];
-const STARTWITH_轻: &[&str; 2] = &["CL", "CVL"];
+const END_WITH_巡: &[&str; 6] = &["CA", "CL", "CAV", "CLT", "BG", "BC"];
+const END_WITH_母: &[&str; 3] = &["CV", "AV", "CVL"];
+const START_WITH_战: &[&str; 2] = &["BB", "BC"];
+const START_WITH_轻: &[&str; 2] = &["CL", "CVL"];
 
 pub fn recognize_enemy(images: &[CharacterImage]) -> Vec<VesselType> {
     let templates = &*TEMPLATES;
@@ -30,8 +30,8 @@ pub fn recognize_enemy(images: &[CharacterImage]) -> Vec<VesselType> {
                 None => Category::None,
             };
             let method = match category {
-                Category::Endwith巡 | Category::Endwith母 => MatchMethod::First,
-                Category::Startwith战 | Category::Startwith轻 => MatchMethod::Last,
+                Category::EndWith巡 | Category::EndWith母 => MatchMethod::First,
+                Category::StartWith战 | Category::StartWith轻 => MatchMethod::Last,
                 Category::None => MatchMethod::All,
             };
             let dist_current = image.calc_image_difference(current, method);
@@ -56,32 +56,32 @@ pub fn recognize_enemy(images: &[CharacterImage]) -> Vec<VesselType> {
 
 #[derive(Debug)]
 enum Category {
-    Endwith巡,
-    Endwith母,
-    Startwith战,
-    Startwith轻,
+    EndWith巡,
+    EndWith母,
+    StartWith战,
+    StartWith轻,
     None,
 }
 fn check_category(a: &Template, b: &Template) -> Category {
-    if ENDWITH_巡.contains(&a.ship_type.as_english())
-        && ENDWITH_巡.contains(&b.ship_type.as_english())
+    if END_WITH_巡.contains(&a.ship_type.as_english())
+        && END_WITH_巡.contains(&b.ship_type.as_english())
     {
-        return Category::Endwith巡;
+        return Category::EndWith巡;
     }
-    if ENDWITH_母.contains(&a.ship_type.as_english())
-        && ENDWITH_母.contains(&b.ship_type.as_english())
+    if END_WITH_母.contains(&a.ship_type.as_english())
+        && END_WITH_母.contains(&b.ship_type.as_english())
     {
-        return Category::Endwith母;
+        return Category::EndWith母;
     }
-    if STARTWITH_战.contains(&a.ship_type.as_english())
-        && STARTWITH_战.contains(&b.ship_type.as_english())
+    if START_WITH_战.contains(&a.ship_type.as_english())
+        && START_WITH_战.contains(&b.ship_type.as_english())
     {
-        return Category::Startwith战;
+        return Category::StartWith战;
     }
-    if STARTWITH_轻.contains(&a.ship_type.as_english())
-        && STARTWITH_轻.contains(&b.ship_type.as_english())
+    if START_WITH_轻.contains(&a.ship_type.as_english())
+        && START_WITH_轻.contains(&b.ship_type.as_english())
     {
-        return Category::Startwith轻;
+        return Category::StartWith轻;
     }
     Category::None
 }
