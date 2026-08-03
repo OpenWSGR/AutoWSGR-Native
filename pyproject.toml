@@ -5,11 +5,13 @@ build-backend = "maturin"
 [project]
 name = "autowsgr_native"
 dynamic = ["version"]
-description = "Image recognition library for AutoWSGR"
+description = "Native (Rust) backends for AutoWSGR: recognition, device control, and other functionality inconvenient to implement in the pure-Python main package"
 requires-python = ">=3.12"
 dependencies = ["numpy>=1.24.4", "opencv-python>=4.13.0.92"]
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+python-source = "python"
+module-name = "autowsgr_native._native"
 # Default cargo manifest used by maturin when run from the repository root
 manifest-path = "python_bindings/Cargo.toml"
