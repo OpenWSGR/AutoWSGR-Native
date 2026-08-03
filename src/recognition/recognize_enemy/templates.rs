@@ -1,6 +1,6 @@
 use std::sync::LazyLock;
 
-use crate::WrappedPixels;
+use crate::recognition::WrappedPixels;
 
 use super::CharacterImage;
 use vessel_type::VesselType;

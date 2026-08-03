@@ -1,6 +1,6 @@
 use std::ops::AddAssign;
 
-use crate::image::{BGRImage, Pixel};
+use super::image::{BGRImage, Pixel};
 const KEY_COLORS: [Pixel; 1] = [Pixel {
     pixel: &[225, 225, 225],
 }];

@@ -2,14 +2,14 @@
 extern crate image;
 use ::image::{DynamicImage, ImageReader};
 
-use crate::WrappedPixels;
-use crate::image::BGRImage;
-use crate::locator::*;
-use crate::recognize_enemy;
-use crate::recognize_enemy::character_image::CharacterImage;
-use crate::recognize_enemy::templates;
-use crate::recognize_enemy::*;
-use crate::recognize_map::*;
+use super::WrappedPixels;
+use super::image::BGRImage;
+use super::locator::*;
+use super::recognize_enemy;
+use super::recognize_enemy::character_image::CharacterImage;
+use super::recognize_enemy::templates;
+use super::recognize_enemy::*;
+use super::recognize_map::*;
 struct ImageWrapper {
     width: usize,
     height: usize,

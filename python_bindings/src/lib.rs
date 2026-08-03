@@ -3,10 +3,15 @@ use pyo3::exceptions::PyValueError;
 use pyo3::prelude::*;
 use std::borrow::Cow;
 
+/// Private native (Rust) backend module for the `autowsgr_native` package.
+///
+/// This is the single shared extension that backs every feature subpackage.
+/// Prefer the public feature packages (e.g. `autowsgr_native.recognition`),
+/// which re-export the functions defined here with documentation and types.
 #[pyo3::pymodule]
-mod autowsgr_native {
+mod _native {
     use super::*;
-    use ::autowsgr_native::{
+    use ::autowsgr_native::recognition::{
         WrappedPixels, image::BGRImage, recognize_enemy::character_image::CharacterImage,
     };
 
@@ -38,7 +43,7 @@ mod autowsgr_native {
             pixels: &pixels,
         };
         let bgr = BGRImage::from_wrapped_pixels(wrapped);
-        Ok(::autowsgr_native::locator::locate(&bgr))
+        Ok(::autowsgr_native::recognition::locator::locate(&bgr))
     }
 
     #[pyfunction]
@@ -47,8 +52,8 @@ mod autowsgr_native {
         for img in &images {
             let shape = img.shape();
             let (height, width) = (shape[0], shape[1]);
-            if height != ::autowsgr_native::recognize_enemy::HEIGHT
-                || width != ::autowsgr_native::recognize_enemy::WIDTH
+            if height != ::autowsgr_native::recognition::recognize_enemy::HEIGHT
+                || width != ::autowsgr_native::recognition::recognize_enemy::WIDTH
             {
                 return Err(PyValueError::new_err(format!(
                     "expected grayscale image with shape (H, W), got shape {:?}",
@@ -68,7 +73,7 @@ mod autowsgr_native {
             };
             char_images.push(CharacterImage::from_wrapped_pixels(wrapped));
         }
-        let result = ::autowsgr_native::recognize_enemy::recognize_enemy(&char_images);
+        let result = ::autowsgr_native::recognition::recognize_enemy::recognize_enemy(&char_images);
         Ok(result
             .iter()
             .map(|vessel_type| vessel_type.as_english())
@@ -98,7 +103,7 @@ mod autowsgr_native {
             pixels: &pixels,
         };
         let bgr = BGRImage::from_wrapped_pixels(wrapped);
-        let result = ::autowsgr_native::recognize_map::recognize_map(&bgr);
+        let result = ::autowsgr_native::recognition::recognize_map::recognize_map(&bgr);
         Ok(result.to_string())
     }
 }

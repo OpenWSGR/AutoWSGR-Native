@@ -1,4 +1,4 @@
-use crate::WrappedPixels;
+use super::WrappedPixels;
 
 pub struct Pixel<'i> {
     pub pixel: &'i [u8],

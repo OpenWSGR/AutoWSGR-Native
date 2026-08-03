@@ -1,4 +1,4 @@
-use crate::WrappedPixels;
+use crate::recognition::WrappedPixels;
 
 use super::{HEIGHT, WIDTH, templates::Template};
 use std::cmp::Ordering;

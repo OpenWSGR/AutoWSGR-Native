@@ -1,5 +1,5 @@
 [package]
-name = "autowsgr_native_py"
+name = "python_bindings"
 version.workspace = true
 edition.workspace = true
 

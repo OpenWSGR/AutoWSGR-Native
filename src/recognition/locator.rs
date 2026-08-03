@@ -1,4 +1,4 @@
-use crate::image::{BGRImage, Pixel};
+use super::image::{BGRImage, Pixel};
 
 const KEY_COLORS: [Pixel; 3] = [
     Pixel {
