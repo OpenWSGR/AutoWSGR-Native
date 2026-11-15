@@ -82,13 +82,24 @@ pub fn normalize_unique<'a>(
 }
 
 /// Stable source fingerprint for cache invalidation; not a security checksum.
+///
+/// `\r\n` is normalized to `\n` first: `include_bytes!` captures raw disk bytes,
+/// and with `core.autocrlf=true` on Windows a fresh checkout materializes the
+/// sources as CRLF while the committed generators were hashed as LF — without
+/// normalization the signature would flip between platforms and spuriously
+/// invalidate committed generated files.
 pub fn source_signature(sources: &[&[u8]]) -> String {
     let mut hash = 0xcbf29ce484222325u64;
     for source in sources {
-        for byte in (source.len() as u64)
+        let normalized: Vec<u8> = source
+            .iter()
+            .copied()
+            .filter(|&b| b != b'\r')
+            .collect();
+        for byte in (normalized.len() as u64)
             .to_le_bytes()
             .iter()
-            .chain(source.iter())
+            .chain(normalized.iter())
         {
             hash ^= u64::from(*byte);
             hash = hash.wrapping_mul(0x100000001b3);
@@ -153,6 +164,14 @@ mod tests {
         assert_eq!(
             normalize_unique(["Еlitе", "ΚΡ", "?"]).unwrap(),
             ["Elite", "KP", "?"]
+        );
+    }
+
+    #[test]
+    fn signature_is_line_ending_insensitive() {
+        assert_eq!(
+            source_signature(&[b"fn a() {\r\n    0\r\n}\r\n"]),
+            source_signature(&[b"fn a() {\n    0\n}\n"])
         );
     }
 

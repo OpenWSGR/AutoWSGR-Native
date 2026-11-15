@@ -1,5 +1,5 @@
 # Page-Last-Modified: 2026-09-28T16:42:48Z
-# Generator-Signature: fnv1a64:263c84c4c1d00082
+# Generator-Signature: fnv1a64:bdf9a4e1d76d2bc9
 """:mod:`autowsgr_native.vessel_type` 的类型存根。
 
 由 vessel_type/build.rs 生成，请勿手改。
