@@ -1,80 +1,27 @@
-use strum::{EnumIter, EnumProperty, FromRepr, IntoStaticStr};
-#[cfg_attr(feature = "pyo3", pyo3::pyclass(eq, eq_int, from_py_object))]
-#[allow(clippy::upper_case_acronyms)]
-#[derive(Debug, Clone, Copy, PartialEq, FromRepr, IntoStaticStr, EnumIter, EnumProperty)]
-pub enum VesselType {
-    #[strum(props(Chinese = "航母"))]
-    CV,
-    #[strum(props(Chinese = "装母"))]
-    AV,
-    #[strum(props(Chinese = "轻母"))]
-    CVL,
+//! 舰种（及港口设施）类型枚举。
+//!
+//! 枚举定义由 `vessel_type/build.rs` 从 zjsnrwiki 生成（见 [`generated`]），
+//! 变体名为中文简称（wiki 二字简称）。每个变体携带中文全称（[`VesselType::as_full_name`]）、
+//! 中文简称（[`VesselType::as_chinese`]）与英文代号（[`VesselType::as_english`]），
+//! 英文代号在生成时归一化为 ASCII（保留大小写及 `?` 哨兵），并可双向解析。
+//! 开启 `pyo3` feature 时作为 Python 类暴露。
 
-    #[strum(props(Chinese = "战列"))]
-    BB,
-    #[strum(props(Chinese = "战巡"))]
-    BC,
-    #[strum(props(Chinese = "航战"))]
-    BBV,
-    #[strum(props(Chinese = "导战"))]
-    BBG,
-    #[strum(props(Chinese = "大巡"))]
-    BG,
+mod generated;
 
-    #[strum(props(Chinese = "重巡"))]
-    CA,
-    #[strum(props(Chinese = "轻巡"))]
-    CL,
-    #[strum(props(Chinese = "航巡"))]
-    CAV,
-    #[strum(props(Chinese = "雷巡"))]
-    CLT,
-    #[strum(props(Chinese = "导巡"))]
-    KP,
-    #[strum(props(Chinese = "防巡"))]
-    CG,
-
-    #[strum(props(Chinese = "驱逐"))]
-    DD,
-    #[strum(props(Chinese = "导驱"))]
-    ASDG,
-    #[strum(props(Chinese = "防驱"))]
-    AADG,
-
-    #[strum(props(Chinese = "重炮"))]
-    BM,
-
-    #[strum(props(Chinese = "潜艇"))]
-    SS,
-    #[strum(props(Chinese = "炮潜"))]
-    SC,
-    #[strum(props(Chinese = "导潜"))]
-    SSG,
-
-    #[strum(props(Chinese = "补给"))]
-    AP,
-    #[strum(props(Chinese = "旗舰"))]
-    Elite,
-    #[strum(props(Chinese = "要塞"))]
-    Fortress,
-    #[strum(props(Chinese = "港口"))]
-    Port,
-    #[strum(props(Chinese = "机场"))]
-    Airfield,
-    #[strum(props(Chinese = "调谐"))]
-    NotDef,
-
-    #[strum(props(Chinese = "无"))]
-    NO,
-}
+pub use generated::VesselType;
+use strum::EnumProperty;
 
 impl VesselType {
     pub fn as_chinese(&self) -> &'static str {
-        self.get_str("Chinese").unwrap()
+        self.into()
     }
 
     pub fn as_english(&self) -> &'static str {
-        self.into()
+        self.get_str("English").unwrap()
+    }
+
+    pub fn as_full_name(&self) -> &'static str {
+        self.get_str("FullName").unwrap()
     }
 
     pub fn from_chinese(s: &str) -> Option<Self> {
@@ -101,6 +48,11 @@ impl VesselType {
         self.as_english()
     }
 
+    #[pyo3(name = "as_full_name")]
+    fn py_as_full_name(&self) -> &'static str {
+        self.as_full_name()
+    }
+
     #[staticmethod]
     #[pyo3(name = "from_chinese")]
     fn py_from_chinese(s: String) -> Option<Self> {
@@ -116,14 +68,28 @@ impl VesselType {
 
 #[cfg(test)]
 mod tests {
+    use std::collections::HashSet;
+
     use strum::IntoEnumIterator;
 
     use super::*;
+
     #[test]
     fn test_iter() {
         for i in VesselType::iter() {
+            assert!(i.as_english().is_ascii());
             assert_eq!(VesselType::from_chinese(i.as_chinese()), Some(i));
             assert_eq!(VesselType::from_english(i.as_english()), Some(i));
         }
+    }
+
+    #[test]
+    fn test_names_unique() {
+        let all: Vec<_> = VesselType::iter().collect();
+        let uniq =
+            |f: fn(&VesselType) -> &'static str| all.iter().map(&f).collect::<HashSet<_>>().len();
+        assert_eq!(uniq(VesselType::as_chinese), all.len());
+        assert_eq!(uniq(VesselType::as_english), all.len());
+        assert_eq!(uniq(VesselType::as_full_name), all.len());
     }
 }

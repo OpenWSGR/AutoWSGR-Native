@@ -11,7 +11,7 @@ use vessel_type::VesselType;
 /// | templates_count: u32 | templates: [Template] |
 ///
 /// # Layout of Template:
-/// | ship_type: u8 | height: u8 | width: u8 | pixels: [u8] |
+/// | name_len: u8 | name: [u8; name_len] (UTF-8 中文名) | height: u8 | width: u8 | pixels: [u8] |
 ///
 /// Filename convention: {VesselType}{index}.png (e.g. 补给0.png, 战列1.png)
 fn main() {
@@ -53,7 +53,9 @@ fn main() {
         // Find matching VesselType
         let ship_type = VesselType::from_chinese(&ship_type_str)
             .unwrap_or_else(|| panic!("Unknown ship type in filename: {name}"));
-        writer.write_all(&[ship_type as u8]).unwrap();
+        let ship_name = ship_type.as_chinese().as_bytes();
+        writer.write_all(&[ship_name.len() as u8]).unwrap();
+        writer.write_all(ship_name).unwrap();
 
         // Read image as grayscale
         let img = image::open(entry.path()).unwrap();
