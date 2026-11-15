@@ -1,11 +1,18 @@
+//! 地图节点字母识别。
+//!
+//! [`recognize_map`] 在地图截图中按白色关键色提取文字连通块（并查集），
+//! 裁剪为二值图后统计行/列的笔画特征，据此判别节点字母 `A`–`J`。
+
 use std::ops::AddAssign;
 
 use super::image::{BGRImage, Pixel};
+/// 节点字母所用的白色关键色（BGR）。
 const KEY_COLORS: [Pixel; 1] = [Pixel {
     pixel: &[225, 225, 225],
 }];
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+/// 一个连通块的外接矩形。
 struct Block {
     left: usize,
     top: usize,
@@ -30,6 +37,7 @@ impl AddAssign for Block {
         self.bottom = self.bottom.max(other.bottom);
     }
 }
+/// 将二值化的图像按连通性合并为若干外接矩形块（并查集实现）。
 struct BlockedImage {
     rec: Vec<Vec<bool>>,
     blocks: Vec<Block>,
@@ -103,9 +111,11 @@ impl BlockedImage {
     }
 }
 
+/// 裁剪后的二值图：`img[y][x]` 表示该像素是否属于笔画。
 type CroppedImage = Vec<Vec<bool>>;
 
 #[allow(clippy::collapsible_else_if)]
+/// 识别地图截图中节点图标的字母（`A`–`J`）；无法判定时返回 NUL（`'\0'`）。
 pub fn recognize_map(image: &BGRImage) -> char {
     let mut blocked_image = BlockedImage::new(image.get_width(), image.get_height());
     blocked_image.init(image);
@@ -216,6 +226,7 @@ pub fn recognize_map(image: &BGRImage) -> char {
 }
 
 #[allow(clippy::needless_range_loop)]
+/// 逐行检测是否含“笔画—空白—笔画”结构（横向笔画闭合，用于识别 A/E 等的横笔）。
 fn scan_row_rev(img: &CroppedImage) -> Vec<bool> {
     let mut res = vec![];
     let row = img.len();
@@ -235,6 +246,7 @@ fn scan_row_rev(img: &CroppedImage) -> Vec<bool> {
 }
 
 #[allow(clippy::needless_range_loop)]
+/// 逐列检测是否含“笔画—空白—笔画”结构（竖向笔画闭合，用于识别 B/D 等的竖向结构）。
 fn scan_col_rev(img: &CroppedImage) -> Vec<bool> {
     let mut res = vec![];
     let row = img.len();
@@ -254,6 +266,7 @@ fn scan_col_rev(img: &CroppedImage) -> Vec<bool> {
 }
 
 #[allow(clippy::needless_range_loop)]
+/// 逐行统计笔画像素总数（行的笔画长度），用于度量各行笔画粗细。
 fn scan_row(img: &CroppedImage) -> Vec<i32> {
     let mut res = vec![];
     let row = img.len();
